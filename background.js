@@ -666,6 +666,16 @@ async function skipStep(step) {
 
   await setStepStatus(step, 'skipped');
   await addLog(`步骤 ${step} 已跳过`, 'warn');
+
+  if (step === 1) {
+    const latestState = await getState();
+    const step2Status = latestState.stepStatuses?.[2];
+    if (!isStepDoneStatus(step2Status) && step2Status !== 'running') {
+      await setStepStatus(2, 'skipped');
+      await addLog('步骤 1 已跳过，步骤 2 也已同时跳过。', 'warn');
+    }
+  }
+
   return { ok: true, step, status: 'skipped' };
 }
 
